@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IPGsMock.Models;
+namespace IPGsMock.SEP.Models;
 
 public class ErrorResponse
 {

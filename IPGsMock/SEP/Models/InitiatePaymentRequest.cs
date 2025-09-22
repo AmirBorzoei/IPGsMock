@@ -1,7 +1,6 @@
-﻿using IPGsMock.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace IPGsMock.Controllers.SEP;
+namespace IPGsMock.SEP.Models;
 
 public class InitiatePaymentRequest
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace IPGsMock.Controllers.SEP;
+namespace IPGsMock.SEP.Models;
 
 public class InitiatePaymentResponse
 {
