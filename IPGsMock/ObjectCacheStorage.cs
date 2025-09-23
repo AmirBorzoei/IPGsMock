@@ -10,7 +10,7 @@ public class ObjectCacheStorage(IMemoryCache cache)
     {
         var cacheOptions = new MemoryCacheEntryOptions
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(20)
         };
 
         _cache.Set(key, value, cacheOptions);

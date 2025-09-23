@@ -14,6 +14,8 @@ public class InitiatePaymentRequest
 
     public string? TerminalId { get; set; }
 
+    public string? RefNum { get; set; }
+
     public string? ResNum { get; set; }
 
     public string? CellNumber { get; set; }

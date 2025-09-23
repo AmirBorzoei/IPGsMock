@@ -1,18 +1,117 @@
 ﻿@using IPGsMock.SEP.Models
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 
 @model InitiatePaymentRequest
 
-@{
-    
-}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 
-<html>
+<head>
+    <meta charset="UTF-8">
+    <title>درگاه شبیه سازی شده ی سپ</title>
+    <style>
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 16px;
+            margin: 10px 0;
+            text-align: right;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .success-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .success-btn:hover {
+            background-color: #218838;
+        }
+
+        .failure-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .failure-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+
 <body>
-    <h1>سلام! این یک ویو Razor است.</h1>
-    <p>مدل: @Model</p>
-    <p>مدل: @Model.Amount</p>
+    <div class="container">
+        <h2>درگاه شبیه سازی شده ی سپ</h2>
+        <p><span class="info-label">اکشن:</span> @Model.Action</p>
+        <p><span class="info-label">مبلغ:</span> @Model.Amount?.ToString("N0") ریال</p>
+        <p><span class="info-label">کارمزد:</span> @Model.Wage?.ToString("N0") ریال</p>
+        <p><span class="info-label">مبلغ موثر:</span> @Model.AffectiveAmount?.ToString("N0") ریال</p>
+        <p><span class="info-label">شماره فاکتور:</span> @Model.ResNum</p>
+        <p><span class="info-label">شماره موبایل:</span> @Model.CellNumber</p>
+        <p><span class="info-label">مدت توکن:</span> @Model.TokenExpiryInMin دقیقه</p>
+        <p><span class="info-label">توکن:</span> @ViewBag.Token</p>
+
+
+        <form method="post" action="payment-gateway/">
+            <input type="hidden" name="token" value="@ViewBag.Token" />
+
+            <div class="buttons-container">
+                <button type="submit" name="actionType" value="success" class="success-btn">پرداخت موفق</button>
+                <button type="submit" name="actionType" value="failure" class="failure-btn">پرداخت ناموفق</button>
+            </div>
+        </form>
+    </div>
+    </div>
 </body>
+
 </html>
