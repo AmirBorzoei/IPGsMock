@@ -2,14 +2,9 @@
 
 namespace IPGsMock;
 
-public class InitiatePaymentRequestStorage
+public class ObjectCacheStorage(IMemoryCache cache)
 {
-    private readonly IMemoryCache _cache;
-
-    public InitiatePaymentRequestStorage(IMemoryCache cache)
-    {
-        _cache = cache;
-    }
+    private readonly IMemoryCache _cache = cache;
 
     public void Add(string key, object value)
     {

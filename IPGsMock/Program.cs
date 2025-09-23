@@ -2,7 +2,7 @@ using IPGsMock;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<InitiatePaymentRequestStorage>();
+builder.Services.AddSingleton<ObjectCacheStorage>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddMemoryCache();

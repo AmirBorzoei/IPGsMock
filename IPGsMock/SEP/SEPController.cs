@@ -5,15 +5,9 @@ namespace IPGsMock.SEP;
 
 [Route("sep")]
 [ApiController]
-public class SEPController : Controller
+public class SEPController(ObjectCacheStorage initiatePaymentRequestStorage) : Controller
 {
-    private readonly InitiatePaymentRequestStorage _initiatePaymentRequestStorage;
-
-    public SEPController(InitiatePaymentRequestStorage initiatePaymentRequestStorage)
-    {
-        _initiatePaymentRequestStorage = initiatePaymentRequestStorage;
-    }
-
+    private readonly ObjectCacheStorage _initiatePaymentRequestStorage = initiatePaymentRequestStorage;
 
     [HttpPost("onlinepg/onlinepg")]
     public IActionResult InitiatePaymentAsync([FromBody] InitiatePaymentRequest? request)
