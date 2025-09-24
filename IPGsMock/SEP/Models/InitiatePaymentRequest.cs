@@ -6,11 +6,11 @@ public class InitiatePaymentRequest
 {
     public string? Action { get; set; }
 
-    public long? Amount { get; set; }
+    public decimal? Amount { get; set; }
 
-    public long? Wage { get; set; }
+    public decimal? Wage { get; set; }
 
-    public long? AffectiveAmount { get; set; }
+    public decimal? AffectiveAmount { get; set; }
 
     public string? TerminalId { get; set; }
 

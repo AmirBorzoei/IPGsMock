@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using IPGsMock.SEP.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,14 +65,54 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
             return Ok(errorResponse);
         }
 
+        var pan = Guid.NewGuid().ToString().Replace("-", string.Empty)[..16];
+        var securePan = pan[..6] + "******" + pan[12..16];
+        var hashedCardNumber = ComputeSha256Hash(pan);
+
+        var paymentResponse = new PaymentResponse
+        {
+            MID = initiatePaymentRequest.TerminalId,
+            // State = string.Empty,
+            // Status = 0,
+            // RRN = string.Empty,
+            RefNum = initiatePaymentRequest.RefNum,
+            ResNum = initiatePaymentRequest.ResNum,
+            TerminalId = initiatePaymentRequest.TerminalId,
+            // TraceNo = string.Empty,
+            Amount = initiatePaymentRequest.Amount!.Value,
+            Wage = initiatePaymentRequest.Wage!.Value,
+            SecurePan = securePan,
+            HashedCardNumber = hashedCardNumber,
+
+            RedirectUrl = initiatePaymentRequest!.RedirectUrl
+        };
+
         switch (actionType.ToLower())
         {
             case "success":
-                return View("SEP/Views/PaymentSuccessful.cshtml");
+                paymentResponse.State = "OK";
+                paymentResponse.Status = 2;
+                paymentResponse.RRN = Guid.NewGuid().ToString().Replace("-", string.Empty)[..10];
+                paymentResponse.TraceNo = Guid.NewGuid().ToString().Replace("-", string.Empty)[..6];
+                return View("SEP/Views/PaymentSuccessful.cshtml", paymentResponse);
             case "failure":
-                return View("SEP/Views/PaymentFailure.cshtml");
+                paymentResponse.State = "Failed";
+                paymentResponse.Status = 3;
+                return View("SEP/Views/PaymentFailure.cshtml", paymentResponse);
             default:
                 return BadRequest("اکشن نامعتبر.");
         }
+    }
+
+    private static string ComputeSha256Hash(string rawData)
+    {
+        byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(rawData));
+
+        var stringBuilder = new StringBuilder();
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            stringBuilder.Append(bytes[i].ToString("x2"));
+        }
+        return stringBuilder.ToString();
     }
 }
