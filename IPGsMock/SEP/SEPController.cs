@@ -34,7 +34,7 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
         return Ok(response);
     }
 
-    [HttpGet("payment-gateway")]
+    [HttpGet("OnlinePG/SendToken")]
     public IActionResult ViewPaymentGateway([FromQuery] string token)
     {
         var initiatePaymentRequest = _objectCacheStorage.TryGetValue(token);
@@ -63,36 +63,14 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
             return Ok(errorResponse);
         }
 
-        string state;
-        bool isSuccessful;
         switch (actionType.ToLower())
         {
             case "success":
-                state = "OK";
-                isSuccessful = true;
-                break;
+                return View("SEP/Views/PaymentSuccessful.cshtml");
             case "failure":
-                state = "NOK";
-                isSuccessful = false;
-                break;
-            // برای دکمه‌های اضافی، case اضافه کنید
-            // case "cancel":
-            //     state = "CanceledByUser";
-            //     isSuccessful = false;
-            //     break;
+                return View("SEP/Views/PaymentFailure.cshtml");
             default:
                 return BadRequest("اکشن نامعتبر.");
         }
-
-        var callbackForm = $@"
-        <form id='callbackForm' action='{initiatePaymentRequest.RedirectUrl}' method='post'>
-            <input type='hidden' name='State' value='{state}' />
-            <input type='hidden' name='RefNum' value='{initiatePaymentRequest.RefNum}' />
-            <input type='hidden' name='ResNum' value='{initiatePaymentRequest.ResNum}' />
-            <input type='hidden' name='TraceNo' value='123456' />
-        </form>
-        <script>document.getElementById('callbackForm').submit();</script>";
-
-        return Content(callbackForm, "text/html");
     }
 }
