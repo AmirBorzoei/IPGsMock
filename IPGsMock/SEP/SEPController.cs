@@ -52,6 +52,7 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
     }
 
     [HttpPost("payment-gateway")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public IActionResult SubmitPaymentGateway()
     {
         var token = Request.Form["token"].ToString();
