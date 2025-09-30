@@ -95,6 +95,7 @@
         <p><span class="info-label">کد رهگیری:</span> @Model.TraceNo</p>
         <p><span class="info-label">شماره مرجع:</span> @Model.RRN</p>
         <p><span class="info-label">شماره کارت:</span> @Model.SecurePan</p>
+        <p><span class="info-label">زمان تراکنش:</span> @Model.PersianStringStraceDate</p>
         <p><span class="info-label">مبلغ:</span> @Model.Amount.ToString("N0") ریال</p>
 
         <form id="callbackForm" action="@Model.RedirectUrl" method="post">

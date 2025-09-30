@@ -10,10 +10,14 @@ namespace IPGsMock.SEP;
 [ApiController]
 public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
 {
+    private const string IPRCacheKeyPostfix = "IPR";
+    private const string PRCacheKeyPostfix = "PR";
+    private const string VTRCacheKeyPostfix = "VTR";
+
     private readonly ObjectCacheStorage _objectCacheStorage = objectCacheStorage;
 
     [HttpPost("onlinepg/onlinepg")]
-    public IActionResult InitiatePaymentAsync([FromBody] InitiatePaymentRequest? request)
+    public IActionResult InitiatePayment([FromBody] InitiatePaymentRequest? request)
     {
         ErrorResponse? errorResponse = null;
         if (request is null)
@@ -29,7 +33,8 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
 
         var token = Guid.NewGuid().ToString().Replace("-", string.Empty);
 
-        _objectCacheStorage.Add(token, request);
+        _objectCacheStorage.Add(token + IPRCacheKeyPostfix, request);
+        _objectCacheStorage.Add(request.RefNum! + IPRCacheKeyPostfix, request);
 
         var response = InitiatePaymentResponse.CreateSuccessResponse(token);
 
@@ -39,7 +44,7 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
     [HttpGet("OnlinePG/SendToken")]
     public IActionResult ViewPaymentGateway([FromQuery] string token)
     {
-        var initiatePaymentRequest = _objectCacheStorage.TryGetValue(token);
+        var initiatePaymentRequest = _objectCacheStorage.TryGetValue(token + IPRCacheKeyPostfix);
 
         if (initiatePaymentRequest is null)
         {
@@ -58,7 +63,7 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
         var token = Request.Form["token"].ToString();
         var actionType = Request.Form["actionType"].ToString();
 
-        var initiatePaymentRequest = (InitiatePaymentRequest?)_objectCacheStorage.TryGetValue(token);
+        var initiatePaymentRequest = (InitiatePaymentRequest?)_objectCacheStorage.TryGetValue(token + IPRCacheKeyPostfix);
 
         if (initiatePaymentRequest is null)
         {
@@ -95,14 +100,53 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
                 paymentResponse.Status = 2;
                 paymentResponse.RRN = Guid.NewGuid().ToString().Replace("-", string.Empty)[..10];
                 paymentResponse.TraceNo = Guid.NewGuid().ToString().Replace("-", string.Empty)[..6];
+                paymentResponse.StraceDate = DateTimeOffset.Now;
+
+                _objectCacheStorage.Add(token + PRCacheKeyPostfix, paymentResponse);
+
                 return View("SEP/Views/PaymentSuccessful.cshtml", paymentResponse);
             case "failure":
                 paymentResponse.State = "Failed";
                 paymentResponse.Status = 3;
+
+                _objectCacheStorage.Add(token + PRCacheKeyPostfix, paymentResponse);
+
                 return View("SEP/Views/PaymentFailure.cshtml", paymentResponse);
             default:
                 return BadRequest("اکشن نامعتبر.");
         }
+    }
+
+    [HttpPost("verifyTxnRandomSessionkey/ipg/VerifyTransaction")]
+    public IActionResult VerifyTransaction([FromBody] VerifyTransactionRequest request)
+    {
+        var paymentResponse = (PaymentResponse?)_objectCacheStorage.TryGetValue(request.RefNum! + PRCacheKeyPostfix);
+        if (paymentResponse is null)
+        {
+            var errorResponse = VerifyTransactionResponse.CreateTransactionNotFoundResponse();
+            return Ok(errorResponse);
+        }
+
+        var verifyTransactionResponse = VerifyTransactionResponse.CreateSuccessResponse(paymentResponse);
+
+        _objectCacheStorage.Add(request.RefNum + VTRCacheKeyPostfix, verifyTransactionResponse);
+
+        return Ok(verifyTransactionResponse);
+    }
+
+    [HttpPost("verifyTxnRandomSessionkey/ipg/ReverseTransaction")]
+    public IActionResult ReverseTransaction([FromBody] ReverseTransactionRequest request)
+    {
+        var verifyTransactionResponse = (VerifyTransactionResponse?)_objectCacheStorage.TryGetValue(request.RefNum + VTRCacheKeyPostfix);
+        if (verifyTransactionResponse is null)
+        {
+            var errorResponse = ReverseTransactionResponse.CreateTransactionNotFoundResponse();
+            return Ok(errorResponse);
+        }
+
+        var reverseTransactionResponse = ReverseTransactionResponse.CreateSuccessResponse(verifyTransactionResponse);
+
+        return Ok(reverseTransactionResponse);
     }
 
     private static string ComputeSha256Hash(string rawData)

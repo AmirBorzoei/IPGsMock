@@ -43,6 +43,10 @@ public class InitiatePaymentRequest
         {
             return ErrorResponse.CreateErrorResponse("5", ".پارامترهای ارسال شده نامعتبر است.; آدرس برگشت به سایت فروشنده الزامی است");
         }
+        if (string.IsNullOrEmpty(RefNum))
+        {
+            return ErrorResponse.CreateErrorResponse("5", ".پارامترهای ارسال شده نامعتبر است.; شماره رسید دیجیتالی الزامی است");
+        }
 
         return null;
     }
