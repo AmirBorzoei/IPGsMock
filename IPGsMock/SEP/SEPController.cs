@@ -17,6 +17,8 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
     private readonly ObjectCacheStorage _objectCacheStorage = objectCacheStorage;
 
     [HttpPost("onlinepg/onlinepg")]
+    [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(InitiatePaymentResponse), (int)HttpStatusCode.OK)]
     public IActionResult InitiatePayment([FromBody] InitiatePaymentRequest? request)
     {
         ErrorResponse? errorResponse = null;
@@ -71,26 +73,27 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
             return Ok(errorResponse);
         }
 
-        var pan = Guid.NewGuid().ToString().Replace("-", string.Empty)[..16];
-        var securePan = pan[..6] + "******" + pan[12..16];
-        var hashedCardNumber = ComputeSha256Hash(pan);
+        var securePan = Random.Shared.Next(100_000, 1_000_000) + "******" + Random.Shared.Next(1_000, 10_000).ToString();
+        var hashedCardNumber = ComputeSha256Hash(securePan);
 
         var paymentResponse = new PaymentResponse
         {
-            MID = initiatePaymentRequest.TerminalId,
+            MID = initiatePaymentRequest.TerminalId!,
             // State = string.Empty,
             // Status = 0,
             // RRN = string.Empty,
-            RefNum = initiatePaymentRequest.RefNum,
-            ResNum = initiatePaymentRequest.ResNum,
-            TerminalId = initiatePaymentRequest.TerminalId,
+            RefNum = initiatePaymentRequest.RefNum!,
+            ResNum = initiatePaymentRequest.ResNum!,
+            TerminalId = initiatePaymentRequest.TerminalId!,
             // TraceNo = string.Empty,
             Amount = initiatePaymentRequest.Amount!.Value,
             Wage = initiatePaymentRequest.Wage!.Value,
             SecurePan = securePan,
             HashedCardNumber = hashedCardNumber,
 
-            RedirectUrl = initiatePaymentRequest!.RedirectUrl
+            StraceDate = DateTimeOffset.Now,
+
+            RedirectUrl = initiatePaymentRequest!.RedirectUrl!
         };
 
         switch (actionType.ToLower())
@@ -118,6 +121,7 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
     }
 
     [HttpPost("verifyTxnRandomSessionkey/ipg/VerifyTransaction")]
+    [ProducesResponseType(typeof(VerifyTransactionResponse), (int)HttpStatusCode.OK)]
     public IActionResult VerifyTransaction([FromBody] VerifyTransactionRequest request)
     {
         var paymentResponse = (PaymentResponse?)_objectCacheStorage.TryGetValue(request.RefNum! + PRCacheKeyPostfix);
@@ -135,6 +139,7 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
     }
 
     [HttpPost("verifyTxnRandomSessionkey/ipg/ReverseTransaction")]
+    [ProducesResponseType(typeof(ReverseTransactionResponse), (int)HttpStatusCode.OK)]
     public IActionResult ReverseTransaction([FromBody] ReverseTransactionRequest request)
     {
         var verifyTransactionResponse = (VerifyTransactionResponse?)_objectCacheStorage.TryGetValue(request.RefNum + VTRCacheKeyPostfix);

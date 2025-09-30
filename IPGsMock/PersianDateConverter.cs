@@ -8,6 +8,11 @@ public static class PersianDateConverter
 
     public static DateTime ToPersianDate(DateTimeOffset dateTimeOffset)
     {
+        if (dateTimeOffset == DateTimeOffset.MinValue)
+        {
+            return DateTime.MinValue;
+        }
+
         var dateTime = dateTimeOffset.DateTime;
         int year = _persianCalendar.GetYear(dateTime);
         int month = _persianCalendar.GetMonth(dateTime);
@@ -18,6 +23,11 @@ public static class PersianDateConverter
 
     public static string ToPersianDateString(DateTimeOffset dateTimeOffset)
     {
+        if (dateTimeOffset == DateTimeOffset.MinValue)
+        {
+            return "0000/00/00 00:00";
+        }
+
         var dateTime = dateTimeOffset.DateTime;
         int year = _persianCalendar.GetYear(dateTime);
         int month = _persianCalendar.GetMonth(dateTime);
