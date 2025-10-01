@@ -8,6 +8,7 @@ WORKDIR /src
 COPY ["IPGsMock/IPGsMock.csproj", "IPGsMock/"]
 RUN dotnet restore "IPGsMock/IPGsMock.csproj"
 COPY . .
+COPY "../README.md" "../."
 WORKDIR "/src/IPGsMock"
 RUN dotnet build "IPGsMock.csproj" -c $configuration -o /app/build
 
