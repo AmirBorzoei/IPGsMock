@@ -24,6 +24,15 @@ public class InitiatePaymentRequest
 
     public string? RedirectUrl { get; set; }
 
+    public bool? GetMethod { get; set; }
+
+    public string? ResNum1 { get; set; }
+    public string? ResNum2 { get; set; }
+    public string? ResNum3 { get; set; }
+    public string? ResNum4 { get; set; }
+
+    public string? HashedCardNumber { get; set; }
+
 
     public ErrorResponse? Validate()
     {

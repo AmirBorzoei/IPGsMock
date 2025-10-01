@@ -12,6 +12,7 @@ public class PaymentResponse
     public string TraceNo { get; set; } = null!;
     public decimal Amount { get; set; }
     public decimal Wage { get; set; }
+    public decimal AffectiveAmount { get; set; }
     public string SecurePan { get; set; } = null!;
     public string HashedCardNumber { get; set; } = null!;
 
