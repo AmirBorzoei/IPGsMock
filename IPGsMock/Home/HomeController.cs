@@ -12,7 +12,7 @@ public class HomeController : Controller
         var readmePath = Path.Combine(currentDir, "README.md");
         if (!System.IO.File.Exists(readmePath))
         {
-            return NotFound("فایل README پیدا نشد!");
+            return NotFound($"فایل README پیدا نشد! [{readmePath}]");
         }
 
         var markdown = System.IO.File.ReadAllText(readmePath);
