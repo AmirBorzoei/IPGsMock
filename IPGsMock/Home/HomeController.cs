@@ -9,13 +9,7 @@ public class HomeController : Controller
     public IActionResult Index()
     {
         var currentDir = Directory.GetCurrentDirectory();
-        var parentDir = Directory.GetParent(currentDir)?.FullName;
-        if (parentDir == null)
-        {
-            return NotFound("در ریشه درایو هستیم و فولدر بالاتری وجود نداره!");
-        }
-
-        var readmePath = Path.Combine(parentDir, "README.md");
+        var readmePath = Path.Combine(currentDir, "README.md");
         if (!System.IO.File.Exists(readmePath))
         {
             return NotFound("فایل README پیدا نشد!");
