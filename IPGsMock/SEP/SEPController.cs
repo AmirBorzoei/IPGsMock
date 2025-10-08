@@ -36,7 +36,7 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
         var token = Guid.NewGuid().ToString().Replace("-", string.Empty);
 
         _objectCacheStorage.Add(token + IPRCacheKeyPostfix, request);
-        _objectCacheStorage.Add(request.RefNum! + IPRCacheKeyPostfix, request);
+        _objectCacheStorage.Add(request.ResNum! + IPRCacheKeyPostfix, request);
 
         var response = InitiatePaymentResponse.CreateSuccessResponse(token);
 
@@ -82,7 +82,7 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
             // State = string.Empty,
             // Status = 0,
             // RRN = string.Empty,
-            RefNum = initiatePaymentRequest.RefNum!,
+            // RefNum = string.Empty,
             ResNum = initiatePaymentRequest.ResNum!,
             TerminalId = initiatePaymentRequest.TerminalId!,
             // TraceNo = string.Empty,
@@ -101,6 +101,7 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
             case "success":
                 paymentResponse.State = "OK";
                 paymentResponse.Status = 2;
+                paymentResponse.RefNum = Guid.NewGuid().ToString().Replace("-", string.Empty)[..5];
                 paymentResponse.RRN = Guid.NewGuid().ToString().Replace("-", string.Empty)[..10];
                 paymentResponse.TraceNo = Guid.NewGuid().ToString().Replace("-", string.Empty)[..6];
                 paymentResponse.StraceDate = DateTimeOffset.Now;

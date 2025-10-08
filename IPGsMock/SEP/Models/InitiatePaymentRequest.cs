@@ -14,8 +14,6 @@ public class InitiatePaymentRequest
 
     public string? TerminalId { get; set; }
 
-    public string? RefNum { get; set; }
-
     public string? ResNum { get; set; }
 
     public string? CellNumber { get; set; }
@@ -52,7 +50,7 @@ public class InitiatePaymentRequest
         {
             return ErrorResponse.CreateErrorResponse("5", ".پارامترهای ارسال شده نامعتبر است.; آدرس برگشت به سایت فروشنده الزامی است");
         }
-        if (string.IsNullOrEmpty(RefNum))
+        if (string.IsNullOrEmpty(ResNum))
         {
             return ErrorResponse.CreateErrorResponse("5", ".پارامترهای ارسال شده نامعتبر است.; شماره رسید دیجیتالی الزامی است");
         }
