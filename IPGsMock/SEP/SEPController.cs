@@ -87,13 +87,13 @@ public class SEPController(ObjectCacheStorage objectCacheStorage) : Controller
             TerminalId = initiatePaymentRequest.TerminalId!,
             // TraceNo = string.Empty,
             Amount = initiatePaymentRequest.Amount!.Value,
-            Wage = initiatePaymentRequest.Wage!.Value,
+            Wage = initiatePaymentRequest.Wage ?? 0,
             SecurePan = securePan,
             HashedCardNumber = hashedCardNumber,
 
             StraceDate = DateTimeOffset.Now,
 
-            RedirectUrl = initiatePaymentRequest!.RedirectUrl!
+            RedirectUrl = initiatePaymentRequest.RedirectUrl!
         };
 
         switch (actionType.ToLower())

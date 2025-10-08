@@ -52,7 +52,7 @@ public class InitiatePaymentRequest
         }
         if (string.IsNullOrEmpty(ResNum))
         {
-            return ErrorResponse.CreateErrorResponse("5", ".پارامترهای ارسال شده نامعتبر است.; شماره رسید دیجیتالی الزامی است");
+            return ErrorResponse.CreateErrorResponse("5", ".پارامترهای ارسال شده نامعتبر است.; شماره خرید الزامی است");
         }
 
         return null;
